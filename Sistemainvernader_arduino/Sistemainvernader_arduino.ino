@@ -11,6 +11,13 @@ ESP8266WiFiMulti wifiMulti;
 #include <MQTT.h>
 #include <DHT.h>
 
+#define DHTPIN 14
+#define DHTTYPE DHT11
+#define SensorPin A0
+float sensorValue = 0;
+int relayPin = 4;
+
+DHT dht(DHTPIN, DHTTYPE);
 
 const char ssid1[] = "ALSW";
 const char pass1[] = "25264897";
@@ -53,16 +60,18 @@ void RecibirMQTT(String &topic, String &payload) {
   Serial.println("Recivio: " + topic + " - " + payload);
   if (payload == "Encender") {
     Serial.println("Encender Foco");
-   
+
   } else if (payload == "Apagar") {
     Serial.println("Apagar Foco");
-   
+
   }
 }
 
 void setup() {
   Serial.begin(115200);
   pinMode(Led, OUTPUT);
+  pinMode(relayPin, OUTPUT);
+
   digitalWrite(Led, 1);
   Serial.println("Iniciando Wifi");
   WiFi.mode(WIFI_STA);//Cambiar modo del Wi-Fi
@@ -70,6 +79,7 @@ void setup() {
   wifiMulti.addAP(ssid1, pass1);
   wifiMulti.addAP(ssid2, pass2);
   wifiMulti.addAP(ssid3, pass3);
+  dht.begin();
 
   client.begin("broker.shiftr.io", net);
   client.onMessage(RecibirMQTT);
@@ -83,5 +93,13 @@ void loop() {
 
   if (!client.connected()) {
     Conectar();
+  }
+
+  if ( millis() > lastMillis + 1000) {
+    lastMillis = millis();
+    float h = dht.readHumidity();
+    float t = dht.readTemperature();
+    String Mensaje = String(h);
+    client.publish("/Sensor/Humedad", Mensaje);
   }
 }
