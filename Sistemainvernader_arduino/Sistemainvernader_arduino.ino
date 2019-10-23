@@ -15,7 +15,7 @@ ESP8266WiFiMulti wifiMulti;
 #define DHTTYPE DHT11
 #define SensorPin A0
 float Valorsensor = 0;
-int relayPin = 4;
+int BonbaPin = 4;
 
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -36,19 +36,20 @@ int Led = 5;
 void RecibirMQTT(String &topic, String &payload) {
   Serial.println("Recivio: " + topic + " - " + payload);
   if (payload == "Encender") {
-    Serial.println("Encender Foco");
-
+    Serial.println("Encender Bonba");
+    digitalWrite(BonbaPin, 1);
   } else if (payload == "Apagar") {
-    Serial.println("Apagar Foco");
-
+    Serial.println("Apagar Bonba");
+    digitalWrite(BonbaPin, 0);
   }
 }
 
 void setup() {
   Serial.begin(115200);
   pinMode(Led, OUTPUT);
-  pinMode(relayPin, OUTPUT);
+  pinMode(BonbaPin, OUTPUT);
 
+  digitalWrite(BonbaPin, 0);
   digitalWrite(Led, 1);
   Serial.println("Iniciando Wifi");
   WiFi.mode(WIFI_STA);//Cambiar modo del Wi-Fi
@@ -119,5 +120,5 @@ void Conectar() {
 
   Serial.println("\nConectado MQTT!");
 
-  client.subscribe("/ALSW/Clasificar");
+  client.subscribe("Senal/BonbaAgua");
 }
