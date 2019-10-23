@@ -14,7 +14,7 @@ ESP8266WiFiMulti wifiMulti;
 #define DHTPIN 14
 #define DHTTYPE DHT11
 #define SensorPin A0
-float sensorValue = 0;
+float Valorsensor = 0;
 int relayPin = 4;
 
 DHT dht(DHTPIN, DHTTYPE);
@@ -29,32 +29,9 @@ const char pass3[] = "pass";
 WiFiClient net;
 MQTTClient client;
 
-unsigned long lastMillis = 0;
+unsigned long tiempoPasado = 0;
 int Led = 5;
 
-void Conectar() {
-  Serial.print("Conectando a Wifi...");
-  while (wifiMulti.run() != WL_CONNECTED) {
-    Serial.print(".");
-    digitalWrite(Led, 1);
-    delay(2000);
-    digitalWrite(Led, 0);
-    delay(2000);
-  }
-  Serial.print("\nConectado a MQTT...");
-
-  while (!client.connect("esp8266", "leyo2123", "pass1234")) {
-    Serial.print("*");
-    digitalWrite(Led, 1);
-    delay(500);
-    digitalWrite(Led, 0);
-    delay(500);
-  }
-
-  Serial.println("\nConectado MQTT!");
-
-  client.subscribe("/ALSW/Clasificar");
-}
 
 void RecibirMQTT(String &topic, String &payload) {
   Serial.println("Recivio: " + topic + " - " + payload);
@@ -95,11 +72,52 @@ void loop() {
     Conectar();
   }
 
-  if ( millis() > lastMillis + 1000) {
-    lastMillis = millis();
+  if ( millis() > tiempoPasado + 1000) {
+    tiempoPasado = millis();
     float h = dht.readHumidity();
     float t = dht.readTemperature();
+    for (int i = 0; i <= 100; i++) {
+      Valorsensor = Valorsensor + analogRead(SensorPin);
+      delay(1);
+    }
+    Valorsensor = Valorsensor / 100.0;
+    Serial.print("T:");
+    Serial.print(t);
+    Serial.print("c H:");
+    Serial.print(h);
+    Serial.print(" % HS:");
+    Serial.print(Valorsensor);
+    Serial.println("%");
+
     String Mensaje = String(h);
     client.publish("/Sensor/Humedad", Mensaje);
+    Mensaje = String(t);
+    client.publish("/Sensor/temperatura", Mensaje);
+    Mensaje = String(Valorsensor);
+    client.publish("/Sensor/HumedadTierra", Mensaje);
   }
+}
+
+void Conectar() {
+  Serial.print("Conectando a Wifi...");
+  while (wifiMulti.run() != WL_CONNECTED) {
+    Serial.print(".");
+    digitalWrite(Led, 1);
+    delay(2000);
+    digitalWrite(Led, 0);
+    delay(2000);
+  }
+  Serial.print("\nConectado a MQTT...");
+
+  while (!client.connect("esp8266", "leyo2123", "pass1234")) {
+    Serial.print("*");
+    digitalWrite(Led, 1);
+    delay(500);
+    digitalWrite(Led, 0);
+    delay(500);
+  }
+
+  Serial.println("\nConectado MQTT!");
+
+  client.subscribe("/ALSW/Clasificar");
 }
