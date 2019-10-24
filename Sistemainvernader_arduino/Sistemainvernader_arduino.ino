@@ -15,14 +15,14 @@ ESP8266WiFiMulti wifiMulti;
 #define DHTTYPE DHT11
 #define SensorPin A0
 float Valorsensor = 0;
-int BonbaPin = 4;
+int BombaPin = 4;
 
 DHT dht(DHTPIN, DHTTYPE);
 
 const char ssid1[] = "ALSW";
 const char pass1[] = "25264897";
-const char ssid2[] = "ALSW2";
-const char pass2[] = "7210-3607";
+const char ssid2[] = "Dirty Bomb";
+const char pass2[] = "2097ESTS3";
 const char ssid3[] = "ssid";
 const char pass3[] = "pass";
 
@@ -36,20 +36,20 @@ int Led = 5;
 void RecibirMQTT(String &topic, String &payload) {
   Serial.println("Recivio: " + topic + " - " + payload);
   if (payload == "Encender") {
-    Serial.println("Encender Bonba");
-    digitalWrite(BonbaPin, 1);
+    Serial.println("Encender Bomba");
+    digitalWrite(BombaPin, 1);
   } else if (payload == "Apagar") {
-    Serial.println("Apagar Bonba");
-    digitalWrite(BonbaPin, 0);
+    Serial.println("Apagar Bomba");
+    digitalWrite(BombaPin, 0);
   }
 }
 
 void setup() {
   Serial.begin(115200);
   pinMode(Led, OUTPUT);
-  pinMode(BonbaPin, OUTPUT);
+  pinMode(BombaPin, OUTPUT);
 
-  digitalWrite(BonbaPin, 0);
+  digitalWrite(BombaPin, 0);
   digitalWrite(Led, 1);
   Serial.println("Iniciando Wifi");
   WiFi.mode(WIFI_STA);//Cambiar modo del Wi-Fi
@@ -110,7 +110,7 @@ void Conectar() {
   }
   Serial.print("\nConectado a MQTT...");
 
-  while (!client.connect("esp8266", "leyo2123", "pass1234")) {
+  while (!client.connect("Sistema_invernadero", "leyo2123", "pass1234")) {
     Serial.print("*");
     digitalWrite(Led, 1);
     delay(500);
@@ -120,5 +120,5 @@ void Conectar() {
 
   Serial.println("\nConectado MQTT!");
 
-  client.subscribe("Senal/BonbaAgua");
+  client.subscribe("Senal/BombaAgua");
 }
