@@ -27,7 +27,13 @@ function MQTTMensaje(message) {
   MensajeUltimo = message;
   if (message.destinationName == "/Sensor/Humedad") {
     console.log("Mensaje Humedad:" + message.destinationName + " - " + message.payloadString);
-    Humedad = StringToInt(message.payloadString);
+    Humedad = Number(message.payloadString);
+  } else if(message.destinationName == "/Sensor/temperatura") {
+    console.log("Mensaje recibido:" + message.destinationName + " - " + message.payloadString);
+    Temperatura = Number(message.payloadString);
+  } else if(message.destinationName == "/Sensor/HumedadTierra") {
+    console.log("Mensaje recibido:" + message.destinationName + " - " + message.payloadString);
+    HumedadTierra = Number(message.payloadString);
   } else {
     console.log("Mensaje recibido:" + message.destinationName + " - " + message.payloadString);
   }
@@ -49,18 +55,22 @@ function setup() {
 
 function ApagarBomba() {
   message = new Paho.MQTT.Message("Apagar");
-  message.destinationName = "/Senal/BonbaAgua";
+  message.destinationName = "/Senal/BombaAgua";
   client.send(message);
 }
 
 function EncenderBomba() {
   message = new Paho.MQTT.Message("Encender");
-  message.destinationName = "/Senal/BonbaAgua";
+  message.destinationName = "/Senal/BombaAgua";
   client.send(message);
 }
 
+//EXISTE UN BUCLE EN EL IF QUE PRODUCE UN FALLO DE CONEXIÓN
+//AL ENVIARSE MUCHOS MENSAJES EN POCO TIEMPO HACIA EL ARDUINO.
 function draw() {
-  if (Humedad < 50) {
+  if ((Humedad < 40) || (HumedadTierra < 100) || (Temperatura > 30)) {
     EncenderBomba();
+  } else if ((Humedad > 40) || (HumedadTierra>100) || (Temperatura < 30)) {
+    ApagarBomba();
   }
 }
