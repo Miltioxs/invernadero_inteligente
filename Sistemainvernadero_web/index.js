@@ -18,13 +18,13 @@ client.connect({
 
 function MQTTPerder(responseObject) {
   if (responseObject.errorCode !== 0) {
-    console.log("MQTT Perdio coneccion Error:" + responseObject.errorMessage);
+    console.log("MQTT Perdio conexion Error:" + responseObject.errorMessage);
   }
 }
-let MensajeUltomo;
+let MensajeUltimo;
 
 function MQTTMensaje(message) {
-  MensajeUltomo = message;
+  MensajeUltimo = message;
   if (message.destinationName == "/Sensor/Humedad") {
     console.log("Mensaje Humedad:" + message.destinationName + " - " + message.payloadString);
     Humedad = StringToInt(message.payloadString);
@@ -41,19 +41,19 @@ function CuandoConectadoMQTT() {
 
 
 function setup() {
-  var BotonEncender = createButton("Encender Bonba");
-  BotonEncender.mousePressed(EncenderBonba);
-  var BotonApagar = createButton("Apagar Bonba");
-  BotonApagar.mousePressed(ApagarBonba);
+  var BotonEncender = createButton("Encender Bomba");
+  BotonEncender.mousePressed(EncenderBomba);
+  var BotonApagar = createButton("Apagar Bomba");
+  BotonApagar.mousePressed(ApagarBomba);
 }
 
-function ApagarBonba() {
+function ApagarBomba() {
   message = new Paho.MQTT.Message("Apagar");
   message.destinationName = "/Senal/BonbaAgua";
   client.send(message);
 }
 
-function EncenderBonba() {
+function EncenderBomba() {
   message = new Paho.MQTT.Message("Encender");
   message.destinationName = "/Senal/BonbaAgua";
   client.send(message);
@@ -61,6 +61,6 @@ function EncenderBonba() {
 
 function draw() {
   if (Humedad < 50) {
-    EncenderBonba();
+    EncenderBomba();
   }
 }
