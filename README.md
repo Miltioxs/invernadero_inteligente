@@ -1,5 +1,7 @@
 # invernadero_inteligente
 invernadero UEES
 
-# contribu
-* Milton 
+# contribuidores
+* Gerson Salazar
+* Milton Mejía
+* León Trujillo
