@@ -67,10 +67,10 @@ function EncenderBomba() {
 
 //EXISTE UN BUCLE EN EL IF QUE PRODUCE UN FALLO DE CONEXIÓN
 //AL ENVIARSE MUCHOS MENSAJES EN POCO TIEMPO HACIA EL ARDUINO.
-function draw() {
+/*function draw() {
   if ((Humedad < 40) || (HumedadTierra < 100) || (Temperatura > 30)) {
     EncenderBomba();
   } else if ((Humedad > 40) || (HumedadTierra>100) || (Temperatura < 30)) {
     ApagarBomba();
   }
-}
+}*/
